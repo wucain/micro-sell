@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wancient.springcloud.product.mapper.ProductInfoMapper">
+    <resultMap id="BaseResultMap" type="com.wancient.springcloud.api.entities.ProductInfo">
+        <id column="product_id" jdbcType="VARCHAR" property="productId"/>
+        <result column="product_name" jdbcType="VARCHAR" property="productName"/>
+        <result column="product_price" jdbcType="DECIMAL" property="productPrice"/>
+        <result column="product_stock" jdbcType="INTEGER" property="productStock"/>
+        <result column="product_description" jdbcType="VARCHAR" property="productDescription"/>
+        <result column="pay_type" jdbcType="TINYINT" property="payType"/>
+        <result column="pay_type_name" jdbcType="VARCHAR" property="payTypeName"/>
+        <result column="product_icon" jdbcType="VARCHAR" property="productIcon"/>
+        <result column="product_status" jdbcType="TINYINT" property="productStatus"/>
+        <result column="category_type" jdbcType="INTEGER" property="categoryType"/>
+        <result column="category_name" jdbcType="VARCHAR" property="categoryName"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="create_user_id" jdbcType="VARCHAR" property="createUserId"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId"/>
+        <result column="enabled" jdbcType="INTEGER" property="enabled"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    product_id, product_name, product_price, product_stock, product_description,pay_type, pay_type_name,product_icon,
+    product_status, category_type, category_name, create_time, create_user_id, update_time, 
+    update_user_id, enabled
+  </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from product_info
+        where product_id = #{productId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByPrimaryKeyIn" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from product_info
+        where product_id in
+        <!-- delete from emp where empno in(7789,7790) -->
+        <!-- forEach : 用来循环 collection : 用来指定循环的数据的类型 可以填的值有：array,list,map item
+            : 循环中为每个循环的数据指定一个别名 index : 循环中循环的下标 open : 开始 close : 结束 separator : 数组中元素之间的分隔符 -->
+        <foreach collection="array" item="arr" index="no" open="("
+                 separator="," close=")">
+            #{arr}
+        </foreach>
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap"
+            parameterType="com.wancient.springcloud.api.entities.ProductInfo">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM product_info
+        <where>
+            <if test="productId != null">
+                AND product_id = #{productId}
+            </if>
+            <if test="payType != null">
+                AND pay_type = #{payType}
+            </if>
+            <if test="payTypeName != null">
+                AND pay_type_name = #{payTypeName}
+            </if>
+            <if test="productName != null">
+                AND product_name LIKE '%${productName}%'
+            </if>
+            <if test="productDescription != null">
+                AND product_description LIKE '%${productDescription}%'
+            </if>
+            <if test="categoryType!=null ">
+                AND category_type = #{categoryType}
+            </if>
+            <if test="categoryName != null">
+                AND category_name LIKE '%${categoryName}%'
+            </if>
+            <if test="createUserId!=null ">
+                AND create_user_id = #{createUserId}
+            </if>
+            <if test="enabled != null ">
+                AND enabled = #{enabled}
+            </if>
+            <if test="productStatus != null ">
+                AND product_status = #{productStatus}
+            </if>
+            <if test="startTime != null ">
+                AND DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%S')>= DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%S')
+            </if>
+            <if test="endTime != null ">
+                AND DATE_FORMAT(#{endTime}, '%Y-%m-%d %H:%i:%S')>= DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%S')
+            </if>
+        </where>
+        <!-- <choose>
+             <when test="orderSort!=null">
+                 ORDER BY #{orderSort} #{orderDirection}
+             </when>
+             <otherwise>
+             </otherwise>
+         </choose>-->
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+      delete from product_info
+      where product_id = #{productId,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteByPrimaryKeyIn" parameterType="java.lang.String">
+        delete from product_info
+        where product_id in
+        <!-- delete from emp where empno in(7789,7790) -->
+        <!-- forEach : 用来循环 collection : 用来指定循环的数据的类型 可以填的值有：array,list,map item
+            : 循环中为每个循环的数据指定一个别名 index : 循环中循环的下标 open : 开始 close : 结束 separator : 数组中元素之间的分隔符 -->
+        <foreach collection="array" item="arr" index="no" open="("
+                 separator="," close=")">
+            #{arr}
+        </foreach>
+    </delete>
+    <insert id="insert" parameterType="com.wancient.springcloud.api.entities.ProductInfo">
+        insert into product_info (product_id, product_name, product_price,
+        product_stock, product_description,pay_type,pay_type_name, product_icon,
+        product_status, category_type, category_name,
+        create_time, create_user_id, update_time,
+        update_user_id, enabled)
+        values (#{productId,jdbcType=VARCHAR},#{productName,jdbcType=VARCHAR}, #{productPrice,jdbcType=DECIMAL},
+        #{productStock,jdbcType=INTEGER},#{productDescription,jdbcType=VARCHAR},
+        #{payType,jdbcType=INTEGER},#{payTypeName,jdbcType=VARCHAR},
+        #{productIcon,jdbcType=VARCHAR},#{productStatus,jdbcType=TINYINT}, #{categoryType,jdbcType=INTEGER},
+        #{categoryName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=VARCHAR},
+        #{updateTime,jdbcType=TIMESTAMP},#{updateUserId,jdbcType=VARCHAR}, #{enabled,jdbcType=INTEGER})
+    </insert>
+    <insert id="insertSelective" parameterType="com.wancient.springcloud.api.entities.ProductInfo">
+        insert into product_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">
+                product_id,
+            </if>
+            <if test="productName != null">
+                product_name,
+            </if>
+            <if test="productPrice != null">
+                product_price,
+            </if>
+            <if test="productStock != null">
+                product_stock,
+            </if>
+            <if test="productDescription != null">
+                product_description,
+            </if>
+            <if test="payType != null">
+                pay_type,
+            </if>
+            <if test="payTypeName != null">
+                pay_type_name,
+            </if>
+            <if test="productIcon != null">
+                product_icon,
+            </if>
+            <if test="productStatus != null">
+                product_status,
+            </if>
+            <if test="categoryType != null">
+                category_type,
+            </if>
+            <if test="categoryName != null">
+                category_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+            <if test="enabled != null">
+                enabled,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">
+                #{productId,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="productPrice != null">
+                #{productPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="productStock != null">
+                #{productStock,jdbcType=INTEGER},
+            </if>
+            <if test="productDescription != null">
+                #{productDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="payType != null">
+                #{payType,jdbcType=INTEGER},
+            </if>
+            <if test="payTypeName != null">
+                #{payTypeName,jdbcType=VARCHAR},
+            </if>
+            <if test="productIcon != null">
+                #{productIcon,jdbcType=VARCHAR},
+            </if>
+            <if test="productStatus != null">
+                #{productStatus,jdbcType=TINYINT},
+            </if>
+            <if test="categoryType != null">
+                #{categoryType,jdbcType=INTEGER},
+            </if>
+            <if test="categoryName != null">
+                #{categoryName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="enabled != null">
+                #{enabled,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.wancient.springcloud.api.entities.ProductInfo">
+        update product_info
+        set product_name = #{productName,jdbcType=VARCHAR},
+        product_price = #{productPrice,jdbcType=DECIMAL},
+        product_stock = #{productStock,jdbcType=INTEGER},
+        product_description = #{productDescription,jdbcType=VARCHAR},
+        pay_type = #{payType,jdbcType=INTEGER},
+        pay_type_name = #{payTypeName,jdbcType=VARCHAR},
+        product_icon = #{productIcon,jdbcType=VARCHAR},
+        product_status = #{productStatus,jdbcType=TINYINT},
+        category_type = #{categoryType,jdbcType=INTEGER},
+        category_name = #{categoryName,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        create_user_id = #{createUserId,jdbcType=VARCHAR},
+        update_time = now(),
+        update_user_id = #{updateUserId,jdbcType=VARCHAR},
+        enabled = #{enabled,jdbcType=INTEGER}
+        where product_id = #{productId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.wancient.springcloud.api.entities.ProductInfo">
+        update product_info
+        <set>
+            <if test="productName != null">
+                product_name = #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="productPrice != null">
+                product_price = #{productPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="productStock != null">
+                product_stock = #{productStock,jdbcType=INTEGER},
+            </if>
+            <if test="productDescription != null">
+                product_description = #{productDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="payType != null">
+                pay_type = #{payType,jdbcType=INTEGER},
+            </if>
+            <if test="payTypeName != null">
+                pay_type_name = #{payTypeName,jdbcType=INTEGER},
+            </if>
+            <if test="productIcon != null">
+                product_icon = #{productIcon,jdbcType=VARCHAR},
+            </if>
+            <if test="productStatus != null">
+                product_status = #{productStatus,jdbcType=TINYINT},
+            </if>
+            <if test="categoryType != null">
+                category_type = #{categoryType,jdbcType=INTEGER},
+            </if>
+            <if test="categoryName != null">
+                category_name = #{categoryName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                create_user_id = #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUserId != null">
+                update_user_id = #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled,jdbcType=INTEGER},
+            </if>
+        </set>
+        where product_id = #{productId,jdbcType=VARCHAR}
+    </update>
+</mapper>

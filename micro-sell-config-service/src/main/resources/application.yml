@@ -1,0 +1,17 @@
+server:
+  port: 3344
+spring:
+  application:
+    name: micro-sell-config
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/wucain/sell-microservice-config
+          username: wucain
+          password: awwi??0229
+          search-paths: /**
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka7001.com:8761/eureka/,http://eureka7002.com:8762/eureka/,http://eureka7003.com:8763/eureka/

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑</title>
+    <meta name="keywords" content="后台">
+    <meta name="description" content="后台">
+
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link href="/pub/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="/pub/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="/pub/css/animate.css" rel="stylesheet">
+    <link href="/pub/css/style.css?v=4.1.0" rel="stylesheet">
+    <style>
+        .c-red {
+            color: red;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form  method="post" action="/manage/product/edit" class="form-horizontal m-t" id="commentForm" onsubmit="return submitForm()">
+                        <input type="hidden" id="productId" name="productId"
+                               th:value="${productInfo==null?'':productInfo.productId}"/>
+                        <input type="hidden" id="enabled" name="enabled"
+                               th:value="${productInfo==null?'':productInfo.enabled}"/>
+                        <input type="hidden" id="productStatus" name="productStatus"
+                               th:value="${productInfo==null?'':productInfo.productStatus}"/>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label"><span class="c-red">*</span>名称：</label>
+                            <div class="col-sm-8">
+                                <input th:value="${productInfo==null?'':productInfo.productName}" placeholder="请输入名称"
+                                       required="" aria-required="true"
+                                       id="productName" name="productName" class="form-control" type="text">
+                                <!--<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 这里写点提示的内容</span>-->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label"><span class="c-red">*</span>金额：</label>
+                            <div class="col-sm-8">
+                                <input type="number" min="0" max="100000" step="0.01" name="productPrice"
+                                       id="productPrice"
+                                       placeholder="请输入金额" th:value="${productInfo==null?'':productInfo.productPrice}"
+                                       class="form-control valid" required=""
+                                       aria-required="true" aria-invalid="true">
+                            </div>
+                        </div>
+                        <input type="hidden" id="payTypeName" name="payTypeName" value=""
+                               th:value="${productInfo==null?'':productInfo.payTypeName}"/>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label"><span class="c-red">*</span>支付类型：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control m-b error" name="payType" id="payType" aria-required="true"
+                                        required=""
+                                        aria-invalid="true">
+                                    <option>请选择</option>
+                                    <option th:each="item,iterStat : ${payTypeList}" value="0" th:value="${item.id}"
+                                            th:selected="${item.id==productInfo.payType}"
+                                            th:text="${item.name}">分类
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <input type="hidden" id="categoryName" name="categoryName" value=""
+                               th:value="${productInfo==null?'':productInfo.categoryName}"/>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label"><span class="c-red">*</span>分类栏目：</label>
+                            <div class="col-sm-8">
+                                <select name="categoryType" id="categoryType" class="form-control m-b error" required=""
+                                        aria-required="true">
+                                    <option>请选择</option>
+                                    <option th:each="item,iterStat : ${productCategoryList}" value="0"
+                                            th:value="${item.categoryType}"
+                                            th:selected="${item.categoryType==productInfo.categoryType}"
+                                            th:lang="${item.categoryId}" th:text="${item.categoryName}">分类
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label"><span class="c-red">*</span>描述：</label>
+                            <div class="col-sm-8">
+                                 <textarea name="productDescription" id="productDescription" cols="103" rows="10"
+                                           class="textarea required"
+                                           required="" aria-required="true"
+                                           placeholder="说点什么..." datatype="*10-100"
+                                           dragonfly="true"
+                                           nullmsg="备注不能为空！">[[${productInfo==null?'':productInfo.productDescription}]]</textarea>
+                                <!--<p class="textarea-numberbar"><em class="textarea-length">0</em>/200</p>-->
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-8 col-sm-offset-3">
+                                <button class="btn btn-primary" type="submit">提交</button>
+                                <button onClick="layer_close();" class="btn btn-default radius" type="button">取消
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- 全局js -->
+<script src="/pub/js/jquery.min.js?v=2.1.4"></script>
+<script src="/pub/js/bootstrap.min.js?v=3.3.6"></script>
+
+<!-- 自定义js -->
+<script src="/pub/js/content.js?v=1.0.0"></script>
+
+<!-- jQuery Validation plugin javascript-->
+<script src="/pub/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="/pub/js/plugins/validate/messages_zh.min.js"></script>
+<script type="text/javascript" src="/lib/layer/2.4/layer.js" th:src="@{/lib/layer/2.4/layer.js}"></script>
+<script src="/pub/js/demo/form-validate-demo.js"></script>
+<script src="https://cdn.bootcss.com/jquery.form/4.2.2/jquery.form.js"></script>
+<script>
+    /*关闭弹出框口*/
+    function layer_close() {
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+    }
+
+    //提交
+    function submitForm() {
+        var payTypeId = $("option:selected", "#payType").val();
+        if (!payTypeId || payTypeId == '请选择') {
+            //必须要选择
+            parent.layer.msg('支付类型为必选项!', {icon: 2, time: 2000});
+            return false;
+        }
+        var categoryType = $("option:selected", "#categoryType").val();
+        if (!categoryType || categoryType == '请选择') {
+            //必须要选择
+            parent.layer.msg('分类栏目为必选项!', {icon: 2, time: 2000});
+            return false;
+        }
+        //parent.layer.msg('保存成功!', {icon: 1, time: 2000});
+    }
+
+    //接收返回值
+    $("#commentForm").ajaxForm(function (data) {
+        if (data.code == 0) {
+            parent.layer.msg(data.msg, {icon: 1, time: 1000});
+        } else {
+            parent.layer.msg(data.msg, {icon: 2, time: 1000});
+        }
+        //关闭页面
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        //刷新数据
+        parent.window.location.replace("/manage/product/list.html");
+    });
+
+    //支付类型选中事件
+    $("#payType").on("change", function () {
+        var id = $("option:selected", this).val();
+        var name = $("option:selected", this).text();
+        if (!id) {
+            //必须要选择
+            $("#payTypeName").val("");
+        } else {
+            $("#payTypeName").val(name);
+        }
+    });
+    //类别选中事件
+    $("#categoryType").on("change", function () {
+        var id = $("option:selected", this).val();
+        var name = $("option:selected", this).text();
+        if (!id) {
+            $("#categoryName").val("");
+            //必须要选择
+        } else {
+            $("#categoryName").val(name);
+        }
+    });
+    $(document).ready(function () {
+        $("#payType").validate({
+            rules: {
+                ant: "required",
+                antzone: {
+                    required: true,
+                    minlength: 1
+                }
+            },
+            messages: {
+                ant: "支付类型是必选",
+                antzone: {
+                    required: "支付类型是必选",
+                    minlength: "最少要选中一项"
+                }
+            }
+        });
+        $("#categoryType").validate({
+            rules: {
+                ant: "required",
+                antzone: {
+                    required: true,
+                    minlength: 1
+                }
+            },
+            messages: {
+                ant: "分类栏目是必选",
+                antzone: {
+                    required: "分类栏目是必选",
+                    minlength: "最少要选中一项"
+                }
+            }
+        });
+    });
+
+
+</script>
+</body>
+
+</html>

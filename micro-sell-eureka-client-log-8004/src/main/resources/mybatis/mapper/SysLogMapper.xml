@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wancient.springcloud.log.mapper.SysLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.wancient.springcloud.api.entities.SysLog">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="ip" jdbcType="VARCHAR" property="ip"/>
+        <result column="open_id" jdbcType="INTEGER" property="openId"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="visit_mothod" jdbcType="VARCHAR" property="visitMothod"/>
+        <result column="visit_url" jdbcType="VARCHAR" property="visitUrl"/>
+        <result column="visit_action" jdbcType="VARCHAR" property="visitAction"/>
+        <result column="visit_time" jdbcType="TIMESTAMP" property="visitTime"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="enabled" jdbcType="INTEGER" property="enabled"/>
+        <result column="visit_parameter" jdbcType="LONGVARCHAR" property="visitParameter"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id ,
+        ip ,
+        open_id ,
+        user_id ,
+        visit_mothod ,
+        visit_url ,
+        visit_action ,
+        visit_time ,
+        remark ,
+        visit_parameter ,
+        enabled
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_log
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap" parameterType="com.wancient.springcloud.api.entities.SysLog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_log
+        <where>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="ip != null">
+                AND ip LIKE '%${ip}%'
+            </if>
+            <if test="openId != null">
+                AND open_id LIKE '%${openId}%'
+            </if>
+            <if test="visitMothod != null">
+                AND visit_mothod LIKE '%${visitMothod}%'
+            </if>
+            <if test="visitAction != null">
+                AND visit_action LIKE '%${visitAction}%'
+            </if>
+            <if test="visitParameter != null">
+                AND visit_parameter LIKE '%${visitParameter}%'
+            </if>
+            <if test="userId!=null ">
+                AND user_id = #{userId}
+            </if>
+            <if test="enabled != null ">
+                AND enabled = #{enabled}
+            </if>
+            <if test="startTime != null ">
+                AND DATE_FORMAT(visit_time, '%Y-%m-%d %H:%i:%S')>= DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%S')
+            </if>
+            <if test="endTime != null ">
+                AND DATE_FORMAT(endTime, '%Y-%m-%d %H:%i:%S')>= DATE_FORMAT(#{visit_time}, '%Y-%m-%d %H:%i:%S')
+            </if>
+        </where>
+    </select>
+    <insert id="insert" parameterType="com.wancient.springcloud.api.entities.SysLog">
+    insert into sys_log (id, ip, open_id, 
+      user_id, visit_mothod, visit_url, 
+      visit_action, visit_time, remark, 
+      enabled, visit_parameter)
+    values (#{id,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}, #{openId,jdbcType=INTEGER}, 
+      #{userId,jdbcType=VARCHAR}, #{visitMothod,jdbcType=VARCHAR}, #{visitUrl,jdbcType=VARCHAR}, 
+      #{visitAction,jdbcType=VARCHAR}, #{visitTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR},
+      #{enabled,jdbcType=INTEGER}, #{visitParameter,jdbcType=LONGVARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.wancient.springcloud.api.entities.SysLog">
+        insert into sys_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="ip != null">
+                ip,
+            </if>
+            <if test="openId != null">
+                open_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="visitMothod != null">
+                visit_mothod,
+            </if>
+            <if test="visitUrl != null">
+                visit_url,
+            </if>
+            <if test="visitAction != null">
+                visit_action,
+            </if>
+            <if test="visitTime != null">
+                visit_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="enabled != null">
+                enabled,
+            </if>
+            <if test="visitParameter != null">
+                visit_parameter,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="ip != null">
+                #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="openId != null">
+                #{openId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="visitMothod != null">
+                #{visitMothod,jdbcType=VARCHAR},
+            </if>
+            <if test="visitUrl != null">
+                #{visitUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="visitAction != null">
+                #{visitAction,jdbcType=VARCHAR},
+            </if>
+            <if test="visitTime != null">
+                #{visitTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="enabled != null">
+                #{enabled,jdbcType=INTEGER},
+            </if>
+            <if test="visitParameter != null">
+                #{visitParameter,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+</mapper>

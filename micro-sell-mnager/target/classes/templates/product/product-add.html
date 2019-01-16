@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--_meta 作为公共模版分离出去-->
+    <div th:replace="./common/_meta"></div>
+    <!--/meta 作为公共模版分离出去-->
+
+    <link href="/lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <input type="hidden" id="productId" name="productId" th:value="${productInfo==null?'':productInfo.productId}"/>
+        <div class="row cl ">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>名称：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text required" value=""
+                       th:value="${productInfo==null?'':productInfo.productName}" placeholder="请输入名称"
+                       id="productName" name="productName" required="" aria-required="true">
+            </div>
+        </div>
+        <div class="row cl ">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>金额：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="number" min="0" max="100000" step="0.01" name="productPrice" id="productPrice"
+                       placeholder="请输入金额" th:value="${productInfo==null?'':productInfo.productPrice}" value=""
+                       class="input-text required" style="width:90%" required="" aria-required="true">
+                元
+            </div>
+        </div>
+        <input type="hidden" id="payTypeName" name="payTypeName" value=""
+               th:value="${productInfo==null?'':productInfo.payTypeName}"/>
+        <div class="row cl ">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>支付类型：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <span class="select-box">
+                    <select class="select required" name="payType" id="payType" required="" aria-required="true">
+                        <option>请选择</option>
+                        <option th:each="item,iterStat : ${payTypeList}" value="0" th:value="${item.id}"
+                                th:selected="${item.id==productInfo.payType}"
+                                th:text="${item.name}">分类</option>
+                    </select>
+				</span>
+            </div>
+        </div>
+        <input type="hidden" id="categoryName" name="categoryName" value=""
+               th:value="${productInfo==null?'':productInfo.categoryName}"/>
+        <div class="row cl ">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>分类栏目：</label>
+            <div class="formControls col-xs-8 col-sm-9"> <span class="select-box">
+				<select name="categoryType" id="categoryType" class="select required" required="" aria-required="true">
+                    <option>请选择</option>
+					<option th:each="item,iterStat : ${productCategoryList}" value="0" th:lang="${item.categoryType}"
+                            th:selected="${item.categoryType==productInfo.categoryType}"
+                            th:value="${item.categoryId}" th:text="${item.categoryName}">分类</option>
+				</select>
+				</span>
+            </div>
+        </div>
+        <div class="row cl ">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>描述：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <textarea name="productDescription" id="productDescription" cols="" rows="" class="textarea required"
+                          required="" aria-required="true"
+                          placeholder="说点什么..." datatype="*10-100"
+                          dragonfly="true"
+                          nullmsg="备注不能为空！">[[${productInfo==null?'':productInfo.productDescription}]]</textarea>
+                <p class="textarea-numberbar"><em class="textarea-length">0</em>/200</p>
+            </div>
+        </div>
+        <div class="row cl ">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                <button class="btn btn-primary radius" type="submit"><i
+                        class="Hui-iconfont">&#xe632;</i> 保存
+                </button>
+                <button onClick="layer_close();" class="btn btn-default radius" type="button">
+                    &nbsp;&nbsp;取消&nbsp;&nbsp;
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="./common/_footer"></div>
+<!--/_footer 作为公共模版分离出去-->
+
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript">
+    //支付类型选中事件
+    $("#payType").on("change", function () {
+        var id = $("option:selected", this).val();
+        var name = $("option:selected", this).text();
+        if (!id) {
+            //必须要选择
+            $("#payTypeName").val("");
+        } else {
+            $("#payTypeName").val(name);
+        }
+    });
+    //类别选中事件
+    $("#categoryType").on("change", function () {
+        var id = $("option:selected", this).val();
+        var name = $("option:selected", this).text();
+        if (!id) {
+            $("#categoryName").val("");
+            //必须要选择
+        } else {
+            $("#categoryName").val(name);
+        }
+    });
+
+    //保存
+    function save_submit() {
+        $(".required").each(function () {
+
+        })
+    }
+</script>
+</body>
+</html>

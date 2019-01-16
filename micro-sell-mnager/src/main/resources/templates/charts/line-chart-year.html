@@ -1,0 +1,267 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--_meta 作为公共模版分离出去-->
+    <div th:replace="./common/_meta"></div>
+    <!--/meta 作为公共模版分离出去-->
+    <title>折线图统计一年支出情况</title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计管理 <span
+        class="c-gray en">&gt;</span> 一年支出情况统计 <a class="btn btn-success radius r"
+                                                  style="line-height:1.6em;margin-top:3px"
+                                                  href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="f-14 c-error">特别声明：<strong id="msg"></strong></div>
+    <div class="text-c"> 年份：
+        <input type="text" readonly="readonly"
+               onclick="WdatePicker({dateFmt:'yyyy',minDate:'2013',maxDate:'#F{$dp.$D(\'endTime\')}'})"
+               id="startTime"
+               name="startTime"
+               class="input-text Wdate" style="width:120px;">
+        -
+        <input type="text" readonly="readonly"
+               onclick="WdatePicker({dateFmt:'yyyy',maxDate:'%y',minDate:'#F{$dp.$D(\'startTime\')}'})"
+               id="endTime" name="endTime" class="input-text Wdate" style="width:120px;">
+        <button name="search" id="btn_search" class="btn btn-success" type="submit"><i
+                class="Hui-iconfont">&#xe665;</i> 统计
+        </button>
+
+    </div>
+
+    <div id="container" style="min-width:700px;height:400px"></div>
+    <div class="f-14 c-error">特别声明：此图表只显示一年的数据。</div>
+    <div id="container_spline" style="min-width:700px;height:400px"></div>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="./common/_footer"></div>
+<!--/_footer 作为公共模版分离出去-->
+
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="/lib/hcharts/Highcharts/5.0.6/js/highcharts.js"></script>
+<script type="text/javascript" src="/lib/hcharts/Highcharts/5.0.6/js/modules/exporting.js"></script>
+<script src="/layui/layui.js" charset="utf-8"></script>
+<script type="text/javascript">
+    function today() {
+        var today = new Date();
+        var h = today.getFullYear();
+        var m = today.getMonth() + 1;
+        var d = today.getDate();
+        var hh = today.getHours();
+        var mm = today.getMinutes();
+        var ss = today.getSeconds();
+        m = m < 10 ? "0" + m : m;
+        d = d < 10 ? "0" + d : d;
+        hh = hh < 10 ? "0" + hh : hh;
+        mm = mm < 10 ? "0" + mm : mm;
+        ss = ss < 10 ? "0" + ss : ss;
+        return h;
+        //return h+"-"+m+"-"+d+" "+hh+":"+mm+":"+ss;
+    }
+
+    $("#endTime").val(today());
+    $("#startTime").val(today());
+
+    function cYearFunc() {
+        console.log($dp.cal.date['y']);
+        //parent.layer.msg($dp.cal.date['y'], {icon: 1, time: 1000});
+        var time = $(this).val();
+        console.log("time:" + time);
+    }
+
+    $("#btn_search").click(function () {
+        var startYear = $("#startTime").val();
+        var endYear = $("#endTime").val();
+        load(startYear, endYear);
+    })
+
+    // function timeChange() {
+    //     var time = $(this).val();
+    //     console.log(time);
+    // }
+
+    function charts(year, total, list_data) {
+        Highcharts.chart('container', {
+            title: {
+                text: year + '年每月支出数据',
+                x: -20 //center
+            },
+            credits: {
+                enabled: false//版权信息关闭
+            },
+            // subtitle: {
+            //     text: year + '全年共支出:' + total + "元",
+            //     x: -20
+            // },
+            xAxis: {
+                categories: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+            },
+            yAxis: {
+                title: {
+                    text: '金额'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                valueSuffix: '元'
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: list_data
+        });
+        layer.closeAll('loading');
+    }
+
+    function dataItem(name, data) {
+        this.name = name;
+        this.data = data;
+    }
+
+    function load(startYear, endYear) {
+        layer.msg('加载中', {
+            icon: 16
+            , shade: 0.01
+        });
+        $.ajax({
+            type: "get",
+            url: "/manage/product/getYearStatisticsVo",
+            data: {startYear: startYear, endYear: endYear},
+            dataType: "json",
+            success: function (data) {
+                if (data.length == 0) {
+                    return false;
+                }
+                var years = [];
+                var totals = [];
+                var monthLists = [];
+                var list_data = [];
+                // var list_data = [
+                //     {"name": "2016", "data": [1, 2, 3, 4, 5, 6, 7, , 8, 9, 10, 11, 12]}
+                // ];
+                var item = [1, 2, 3, 4, 5, 6, 7, , 8, 9, 10, 11, 12];
+                for (var i = 0; i < data.length; i++) {
+                    var year = data[i].year;//年份
+                    var total = data[i].totalMoney;//总金额
+                    var monthList = data[i].monthVoList;//数据
+                    years[i] = year;
+                    totals[i] = total;
+                    monthLists[i] = monthList;
+                }
+                var year_total = [];
+                for (var i = 0; i < monthLists.length; i++) {
+                    var year_monty_total = 0.0;
+                    var monty = new Array();// 金额
+                    //item.set("name", years[i]);
+                    for (var j = 0; j < monthLists[i].length; j++) {
+                        monty[j] = monthLists[i][j].totalMonty;
+                        year_monty_total += monthLists[i][j].totalMonty;
+                    }
+                    year_total[i] = year_monty_total;
+                    list_data.push(new dataItem(years[i], monty));
+                    // item.set("data", monty);
+                    //list_data[i]["name"] = years[i];
+                    //list_data[i]["data"] = monty;
+                }
+                var title = "";
+                for (var i = 0; i < year_total.length; i++) {
+                    title += years[i] + "年全年共支出:" + year_total[i] + "元;"
+                }
+
+                $("#msg").text(title);
+                //加载图表
+                console.log(list_data);
+                charts(years[0], totals, list_data);
+
+            }
+        })
+    }
+
+    $(function () {
+        load(today());
+
+    });
+</script>
+
+<script>
+    Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+    });
+
+    function activeLastPointToolip(chart) {
+        var points = chart.series[0].points;
+        chart.tooltip.refresh(points[points.length - 1]);
+    }
+
+    var chart = Highcharts.chart('container_spline', {
+        chart: {
+            type: 'spline',
+            marginRight: 10,
+            events: {
+                load: function () {
+                    var series = this.series[0],
+                        chart = this;
+                    activeLastPointToolip(chart);
+                    setInterval(function () {
+                        var x = (new Date()).getTime(), // 当前时间
+                            y = Math.random();          // 随机值
+                        series.addPoint([x, y], true, true);
+                        activeLastPointToolip(chart);
+                    }, 1000);
+                }
+            }
+        },
+        title: {
+            text: '一年每天数据显示（测试）'
+        },
+        xAxis: {
+            type: 'datetime',
+            tickPixelInterval: 150
+        },
+        yAxis: {
+            title: {
+                text: null
+            }
+        },
+        tooltip: {
+            formatter: function () {
+                return '<b>' + this.series.name + '</b><br/>' +
+                    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                    Highcharts.numberFormat(this.y, 2);
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        series: [{
+            name: '随机数据',
+            data: (function () {
+                // 生成随机值
+                var data = [],
+                    time = (new Date()).getTime(),
+                    i;
+                for (i = -19; i <= 0; i += 1) {
+                    data.push({
+                        x: time + i * 1000,
+                        y: Math.random()
+                    });
+                }
+                return data;
+            }())
+        }]
+    });
+</script>
+</body>
+</html>

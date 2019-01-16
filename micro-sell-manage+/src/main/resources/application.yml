@@ -1,0 +1,22 @@
+server:
+  context-path: /
+  port: 8081
+
+spring:
+  thymeleaf:
+    suffix: .html
+    prefix: classpath:/templates/
+eureka:
+  client: #客户端注册进eureka服务列表内
+    service-url:
+      #defaultZone: http://localhost:7001/eureka
+      defaultZone: http://eureka7001.com:8761/eureka/,http://eureka7002.com:8762/eureka/,http://eureka7003.com:8763/eureka/
+  instance:
+    #别名
+    instance-id: micro-sell-manage+-8081
+    prefer-ip-address: true     #访问路径可以显示IP地址
+
+feign:
+  hystrix:
+    #开启
+    enabled: true

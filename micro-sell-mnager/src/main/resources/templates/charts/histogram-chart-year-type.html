@@ -1,0 +1,215 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--_meta 作为公共模版分离出去-->
+    <div th:replace="./common/_meta"></div>
+    <!--/meta 作为公共模版分离出去-->
+    <title>一年支出类型统计</title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 统计管理 <span
+        class="c-gray en">&gt;</span> 一年支出类型统计 <a class="btn btn-success radius r"
+                                                  style="line-height:1.6em;margin-top:3px"
+                                                  href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div class="f-14 c-error">特别声明：<strong id="msg"></strong></div>
+    <div class="text-c"> 年份：
+        <input type="text" readonly="readonly"
+               onclick="WdatePicker({dateFmt:'yyyy',minDate:'2013',maxDate:'#F{$dp.$D(\'endTime\')}'})"
+               id="startTime"
+               name="startTime"
+               class="input-text Wdate" style="width:120px;">
+        -
+        <input type="text" readonly="readonly"
+               onclick="WdatePicker({dateFmt:'yyyy',maxDate:'%y',minDate:'#F{$dp.$D(\'startTime\')}'})"
+               id="endTime" name="endTime" class="input-text Wdate" style="width:120px;">
+        <button name="search" id="btn_search" class="btn btn-success" type="submit"><i
+                class="Hui-iconfont">&#xe665;</i> 统计
+        </button>
+
+    </div>
+    <div id="container" style="min-width:700px;height:400px"></div>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="./common/_footer"></div>
+<!--/_footer 作为公共模版分离出去-->
+
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="/lib/hcharts/Highcharts/5.0.6/js/highcharts.js"></script>
+<script type="text/javascript" src="/lib/hcharts/Highcharts/5.0.6/js/modules/exporting.js"></script>
+<script type="text/javascript" src="/lib/hcharts/Highcharts/5.0.6/js/highcharts-3d.js"></script>
+<script src="/layui/layui.js" charset="utf-8"></script>
+<script type="text/javascript">
+    function today() {
+        var today = new Date();
+        var h = today.getFullYear();
+        var m = today.getMonth() + 1;
+        var d = today.getDate();
+        var hh = today.getHours();
+        var mm = today.getMinutes();
+        var ss = today.getSeconds();
+        m = m < 10 ? "0" + m : m;
+        d = d < 10 ? "0" + d : d;
+        hh = hh < 10 ? "0" + hh : hh;
+        mm = mm < 10 ? "0" + mm : mm;
+        ss = ss < 10 ? "0" + ss : ss;
+        return h;
+        //return h+"-"+m+"-"+d+" "+hh+":"+mm+":"+ss;
+    }
+
+    $("#endTime").val(today());
+    $("#startTime").val(today());
+
+    function cYearFunc() {
+        console.log($dp.cal.date['y']);
+        //parent.layer.msg($dp.cal.date['y'], {icon: 1, time: 1000});
+        var time = $(this).val();
+        console.log("time:" + time);
+    }
+
+    $("#btn_search").click(function () {
+        var startYear = $("#startTime").val();
+        var endYear = $("#endTime").val();
+        load(startYear, endYear);
+    })
+
+    // function timeChange() {
+    //     var time = $(this).val();
+    //     console.log(time);
+    // }
+
+    function charts(name, list_data) {
+        var chart = Highcharts.chart('container', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '一年支出类型统计'
+            },
+            credits: {
+                enabled: false//版权信息关闭
+            },
+            subtitle: {
+                text: '对比'
+            },
+            legend: {
+                align: 'right',
+                verticalAlign: 'middle',
+                layout: 'vertical'
+            },
+            xAxis: {
+                categories: name,
+                labels: {
+                    x: -10
+                }
+            },
+            yAxis: {
+                allowDecimals: false,
+                title: {
+                    text: '金额'
+                }
+            },
+            series: list_data,
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            align: 'center',
+                            verticalAlign: 'bottom',
+                            layout: 'horizontal'
+                        },
+                        yAxis: {
+                            labels: {
+                                align: 'left',
+                                x: 0,
+                                y: -5
+                            },
+                            title: {
+                                text: null
+                            }
+                        },
+                        subtitle: {
+                            text: null
+                        },
+                        credits: {
+                            enabled: false
+                        }
+                    }
+                }]
+            }
+        });
+        layer.closeAll('loading');
+    }
+
+    function dataItem(name, data) {
+        this.name = name;
+        this.data = data;
+    }
+
+    function load(startYear, endYear) {
+        layer.msg('加载中', {
+            icon: 16
+            , shade: 0.01
+        });
+        $.ajax({
+            type: "get",
+            url: "/manage/product/getTypeStatisticsVo",
+            data: {startYear: startYear, endYear: endYear},
+            dataType: "json",
+            success: function (data) {
+                if (data.length == 0) {
+                    return false;
+                }
+                var years = [];
+                var name = [];
+
+                var montys = [];
+                var typeVoLists = [];
+                var list_data = [];
+                for (var i = 0; i < data.length; i++) {
+                    var year = data[i].year;//年份
+                    var total = data[i].totalMoney;//总金额
+                    var typeVoList = data[i].typeVoList;//数据
+                    years[i] = year;
+                    typeVoLists[i] = typeVoList;
+                }
+                var year_total = [];
+                for (var i = 0; i < typeVoLists.length; i++) {
+                    var monty = new Array();// 金额
+                    var year_monty_total = 0.0;
+                    for (var j = 0; j < typeVoLists[i].length; j++) {
+                        monty[j] = typeVoLists[i][j].total;
+                        name[j] = typeVoLists[i][j].name;
+                        year_monty_total += typeVoLists[i][j].total;
+                    }
+                    year_total[i] = year_monty_total;
+                    montys[i] = monty;
+                }
+                for (var i = 0; i < years.length; i++) {
+                    list_data.push(new dataItem(years[i], montys[i]));
+                }
+                var title = "";
+                for (var i = 0; i < year_total.length; i++) {
+                    title += years[i] + "年全年共支出:" + year_total[i] + "元;"
+                }
+                $("#msg").text(title);
+                //加载图表
+                charts(name, list_data);
+
+            }
+        })
+    }
+
+    $(function () {
+        load(today());
+
+    });
+</script>
+</body>
+</html>

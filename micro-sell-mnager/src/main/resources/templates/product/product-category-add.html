@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--_meta 作为公共模版分离出去-->
+    <div th:replace="./common/_meta"></div>
+    <!--/meta 作为公共模版分离出去-->
+    <title>添加产品分类</title>
+</head>
+<body>
+<div class="page-container">
+    <form action="/manage/product/category/edit" method="post" class="form form-horizontal" id="form-category-add"
+          enctype="application/x-www-form-urlencoded">
+        <input type="hidden" id="categoryId" name="categoryId"
+               th:value="${productCategory!=null}?${productCategory.categoryId}"/>
+        <input type="hidden" id="parentId" name="parentId"
+               th:value="${productCategory!=null}?${productCategory.parentId}"/>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>分类名称：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" placeholder="请输入分类名称" id="categoryName" name="categoryName"
+                       th:value="${productCategory!=null}?${productCategory.categoryName}">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>分类类型：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="text" class="input-text" placeholder="请输入分类类型" id="categoryType" name="categoryType"
+                       th:value="${productCategory!=null}?${productCategory.categoryType}">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>可用金额：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <input type="number" class="input-text" value="" placeholder="" id="defaultMoney" name="defaultMoney"
+                       th:value="${productCategory!=null}?${productCategory.defaultMoney}">元
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">备注：</label>
+            <div class="formControls col-xs-6 col-sm-6">
+                <textarea name="remake" id="remake" cols="" rows="" class="textarea" placeholder="说点什么..."
+                          onKeyUp="$.Huitextarealength(this,100)">[[${productCategory!=null}?${productCategory.remake}]]</textarea>
+                <!--<p class="textarea-numberbar"><em class="textarea-length">0</em>/100</p>-->
+            </div>
+        </div>
+        <div class="row cl">
+            <div class="col-9 col-offset-2">
+                <input class="btn btn-primary radius" id="add" type="button" onclick="submitmsg(this)"
+                       value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                <input th:if="${productCategory!=null}" type="button" class="btn btn-danger radius"
+                       onclick="delmsg(this)" id="delete" value="&nbsp;&nbsp;删除&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<div th:replace="./common/_footer"></div>
+<!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript" src="/lib/layer/2.4/layer.js" th:src="@{/lib/layer/2.4/layer.js}"></script>
+<script type="text/javascript">
+    //保存
+    function submitmsg(obj) {
+        var categoryName = $("#categoryName").val();
+        var categoryType = $("#categoryType").val();
+        var defaultMoney = $("#defaultMoney").val();
+        var remake = $("#remake").val();
+        if (!categoryName) {
+            parent.parent.layer.msg('分类名称必填', {icon: 2, time: 1000});
+            return false;
+        }
+        if (!categoryType) {
+            parent.parent.layer.msg('分类类型必填', {icon: 2, time: 1000});
+            return false;
+        }
+        if (!defaultMoney) {
+            parent.parent.layer.msg('可用金额必填', {icon: 2, time: 1000});
+            return false;
+        }
+        if (!remake) {
+            parent.parent.layer.msg('备注必填', {icon: 2, time: 1000});
+            return false;
+        }
+        $("#form-category-add").submit();
+    }
+
+    $("#form-category-add").ajaxForm(function (data) {
+        if (data.code == 0) {
+            parent.parent.layer.msg(data.msg, {icon: 1, time: 1000});
+        } else {
+            parent.parent.layer.msg(data.msg, {icon: 2, time: 1000});
+        }
+        parent.window.location.replace("/manage/product/category/list.html");
+    });
+
+    function delmsg(obj) {
+        var id = $("#categoryId").val();
+        parent.parent.layer.confirm('确认要删除吗？', function (index) {
+            parent.parent.layer.msg('加载中', {
+                icon: 16
+                , shade: 0.01
+            });
+            $.ajax({
+                type: 'get',
+                url: '/manage/product/category/delete/' + id,
+                success: function (data) {
+                    parent.parent.layer.closeAll('loading');
+                    //$(obj).parents("tr").remove();
+                    if (data.code == 0) {
+                        parent.parent.layer.msg('删除成功！', {icon: 1, time: 1000});
+                        parent.window.location.replace("/manage/product/category/list.html");
+                    } else {
+                        parent.parent.layer.msg(data.msg, {icon: 2, time: 1000});
+                    }
+
+                },
+                error: function (data) {
+                    parent.parent.layer.closeAll('loading');
+                    parent.parent.layer.msg('系统异常，删除失败，请重试!', {icon: 2, time: 1000});
+                    console.log(data.msg);
+                },
+            });
+        });
+    }
+
+</script>
+</body>
+</html>
