@@ -125,9 +125,7 @@ public class ProductController {
         if (!StringUtils.isEmpty(endTime)) {
             productForm.setEndTime(endTime);
         }
-        log.info("查询出结果了");
         ResultVo resultVo = productClientService.list(productForm);
-        log.info(resultVo.getData().toString());
         return resultVo;
     }
 

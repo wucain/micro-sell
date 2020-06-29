@@ -2,6 +2,8 @@ package com.wancient.springcloud.user.service;
 
 import com.wancient.springcloud.api.entities.SysUser;
 
+import java.util.List;
+
 /**
  * 卖家端
  * Created by IntelliJ IDEA.
@@ -10,8 +12,18 @@ import com.wancient.springcloud.api.entities.SysUser;
  * Time: 21:16
  */
 public interface SysUserService {
+
+
     /**
-     * 根据openid查询卖家端信息
+     * 获取用户id
+     *
+     * @param userId
+     * @return
+     */
+    SysUser findByUserId(String userId);
+
+    /**
+     * 根据openid查询用户信息
      *
      * @param openid
      * @return
@@ -35,4 +47,31 @@ public interface SysUserService {
      * @return
      */
     SysUser findSysUserByUsernamePassword(String username, String password);
+
+
+    /**
+     * 获取用户列表
+     *
+     * @param sysUser
+     * @return
+     */
+    List<SysUser> list(SysUser sysUser);
+
+
+    /**
+     * 保存用户信息
+     *
+     * @param sysUser
+     * @return
+     */
+    Integer insert(SysUser sysUser);
+
+    /**
+     * 更新用户信息
+     *
+     * @param sysUser
+     * @return
+     */
+    Integer update(SysUser sysUser);
+
 }

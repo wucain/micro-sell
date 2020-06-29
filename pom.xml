@@ -15,11 +15,14 @@
         <module>micro-sell-eureka-client-user-8002</module>
         <module>micro-sell-eureka-client-category-8003</module>
         <module>micro-sell-eureka-client-log-8004</module>
+        <module>micro-sell-eureka-client-dictionary-8005</module>
+        <module>micro-sell-eureka-client-wechatuser-8006</module>
+        <module>micro-sell-eureka-client-wechat-8007</module>
         <module>micro-sell-mnager</module>
         <module>micro-sell-client</module>
         <module>micro-sell-config-service</module>
         <module>micro-sell-manage+</module>
-        <module>micro-sell-eureka-client-dictionary-8005</module>
+
     </modules>
     <packaging>pom</packaging>
 

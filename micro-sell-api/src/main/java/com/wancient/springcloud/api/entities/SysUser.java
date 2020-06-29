@@ -1,6 +1,7 @@
 package com.wancient.springcloud.api.entities;
 
 
+import com.wancient.springcloud.api.vo.PageModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,7 +23,7 @@ import java.io.Serializable;
 @DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor
-public class SysUser implements Serializable {
+public class SysUser extends PageModel implements Serializable {
 
     @Id
     private String userId;
@@ -45,12 +47,12 @@ public class SysUser implements Serializable {
     /**
      * 创建时间
      */
-    private String createTime;
+    private Date createTime;
 
     /**
      * 修改时间
      */
-    private String updateTime;
+    private Date updateTime;
 
     /**
      * 创建用户id
@@ -68,4 +70,23 @@ public class SysUser implements Serializable {
     private Integer enabled;
 
 
+    /**
+     * 性别（0：女；1：男；null：未知）
+     */
+    private Boolean gender;
+
+    /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
+     * 地址
+     */
+    private String address;
+
+    /**
+     * 手机号
+     */
+    private String phone;
 }

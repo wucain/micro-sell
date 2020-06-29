@@ -38,3 +38,13 @@ info:
   build.artifactId: ${project.artifactId}
   build.version: ${project.version}
 
+# 打印mapper sql
+logging:
+  level:
+    com.wancient.springcloud.log.mapper: trace
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql

@@ -1,21 +1,29 @@
 package com.wancient.springcloud.user.controller;
 
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.wancient.springcloud.api.constant.CookieConstant;
 import com.wancient.springcloud.api.constant.RedisConstant;
+import com.wancient.springcloud.api.entities.ProductInfo;
 import com.wancient.springcloud.api.entities.SysUser;
 import com.wancient.springcloud.api.enums.ResultEnum;
 import com.wancient.springcloud.api.utils.CookieUtil;
+import com.wancient.springcloud.api.utils.KeyUtil;
+import com.wancient.springcloud.api.utils.ResultVoUtil;
+import com.wancient.springcloud.api.vo.ResultVo;
 import com.wancient.springcloud.user.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,6 +41,59 @@ public class SysUserController {
 
     @Autowired
     private SysUserService sysUserService;
+
+
+    /**
+     * 分页获取用户列表
+     *
+     * @param sysUser
+     * @return
+     */
+    @PostMapping("/list")
+    public ResultVo list(@RequestBody SysUser sysUser) {
+        //分页查询数据
+        PageHelper.startPage(sysUser.getPageNum(), sysUser.getPageSize(), " create_time desc");
+        List<SysUser> sysUserList = sysUserService.list(sysUser);
+        PageInfo pageInfo = new PageInfo<SysUser>(sysUserList);
+        return ResultVoUtil.success(pageInfo);
+    }
+
+    /**
+     * 保存、新增用户
+     *
+     * @param sysUser
+     * @return
+     */
+    @PostMapping("/save")
+    public Integer save(@RequestBody SysUser sysUser) {
+        try {
+            //新增
+            if (StringUtils.isEmpty(sysUser.getUserId())) {
+                //新增
+                sysUser.setUserId(KeyUtil.createNum("U"));
+                return sysUserService.insert(sysUser);
+            } else {
+                //修改
+                return sysUserService.update(sysUser);
+            }
+        } catch (Exception e) {
+            log.error("【用户信息保存、更新】 发生异常{}", e.getMessage());
+        }
+        return 0;
+    }
+
+
+    /**
+     * 获取用户信息
+     *
+     * @param userId
+     * @return
+     */
+    @GetMapping("/get")
+    public SysUser get(@RequestParam("userId") String userId) {
+        return sysUserService.findByUserId(userId);
+    }
+
 
     /**
      * 账号密码登录

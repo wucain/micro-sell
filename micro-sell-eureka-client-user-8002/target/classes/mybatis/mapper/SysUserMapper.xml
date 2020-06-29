@@ -6,16 +6,20 @@
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
         <result column="openid" jdbcType="VARCHAR" property="openid"/>
+        <result column="gender" jdbcType="TINYINT" property="gender"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="enabled" jdbcType="INTEGER" property="enabled"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="create_user_id" jdbcType="VARCHAR" property="createUserId"/>
         <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId"/>
-        <result column="enabled" jdbcType="INTEGER" property="enabled"/>
     </resultMap>
 
     <sql id="Base_Column_List">
     user_id, username, password, openid, create_time, update_time, create_user_id,
-    update_user_id, enabled
+    update_user_id, enabled,gender,email,phone,address
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
@@ -61,6 +65,18 @@
             <if test="endTime != null ">
                 AND DATE_FORMAT(endTime, '%Y-%m-%d %H:%i:%S')>= DATE_FORMAT(#{create_time}, '%Y-%m-%d %H:%i:%S')
             </if>
+            <if test="gender != null">
+                AND gender = #{gender}
+            </if>
+            <if test="email != null">
+                AND email LIKE '%${email}%'
+            </if>
+            <if test="phone != null">
+                AND phone LIKE '%${phone}%'
+            </if>
+            <if test="address != null">
+                AND address LIKE '%${address}%'
+            </if>
         </where>
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
@@ -81,11 +97,12 @@
     <insert id="insert" parameterType="com.wancient.springcloud.api.entities.SysUser">
     insert into sys_user (user_id, username, password,
       openid, create_time, update_time,
-      create_user_id, update_user_id, enabled
+      create_user_id, update_user_id, enabled,gender,email,phone,address
       )
     values (#{userId,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
       #{openid,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
-      #{createUserId,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, #{enabled,jdbcType=INTEGER}
+      #{createUserId,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, #{enabled,jdbcType=INTEGER},
+      #{gender,jdbcType=TINYINT}, #{gender,jdbcType=VARCHAR},,#{phone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}
       )
   </insert>
     <insert id="insertSelective" parameterType="com.wancient.springcloud.api.entities.SysUser">
@@ -118,6 +135,18 @@
             <if test="enabled != null">
                 enabled,
             </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -146,6 +175,18 @@
             </if>
             <if test="enabled != null">
                 #{enabled,jdbcType=INTEGER},
+            </if>
+            <if test="gender != null">
+                #{gender,jdbcType=TINYINT},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -176,6 +217,18 @@
             <if test="enabled != null">
                 enabled = #{enabled,jdbcType=INTEGER},
             </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=TINYINT},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
         </set>
         where user_id = #{userId,jdbcType=VARCHAR}
     </update>
@@ -188,7 +241,11 @@
       update_time = now(),
       create_user_id = #{createUserId,jdbcType=VARCHAR},
       update_user_id = #{updateUserId,jdbcType=VARCHAR},
-      enabled = #{enabled,jdbcType=INTEGER}
+      enabled = #{enabled,jdbcType=INTEGER},
+      gender = #{gender,jdbcType=TINYINT},
+      email = #{email,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR}
     where user_id = #{userId,jdbcType=VARCHAR}
   </update>
 </mapper>

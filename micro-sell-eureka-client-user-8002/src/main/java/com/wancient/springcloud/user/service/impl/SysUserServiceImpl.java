@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Wancient
@@ -21,6 +23,21 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Autowired
     private SysUserMapper mapper;
+
+    /**
+     * 获取用户信息
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public SysUser findByUserId(String userId) {
+        SysUser sysUser = mapper.selectByPrimaryKey(userId);
+        if(sysUser!=null){
+            sysUser.setPassword(StringUtils.EMPTY);
+        }
+        return sysUser;
+    }
 
     /**
      * 根据openid查询用户信息
@@ -77,4 +94,39 @@ public class SysUserServiceImpl implements SysUserService {
         }
         return null;
     }
+
+    /**
+     * 获取用户列表
+     *
+     * @param sysUser
+     * @return
+     */
+    @Override
+    public List<SysUser> list(SysUser sysUser) {
+        return mapper.selectAll(sysUser);
+    }
+
+
+    /**
+     * 新建用户
+     *
+     * @param sysUser
+     * @return
+     */
+    @Override
+    public Integer insert(SysUser sysUser) {
+        return mapper.insertSelective(sysUser);
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param sysUser
+     * @return
+     */
+    @Override
+    public Integer update(SysUser sysUser) {
+        return mapper.updateByPrimaryKeySelective(sysUser);
+    }
+
 }
