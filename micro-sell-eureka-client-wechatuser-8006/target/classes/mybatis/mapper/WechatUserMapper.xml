@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wancient.springcloud.wechatuser.mapper.WechatUserMapper">
+    <resultMap id="BaseResultMap" type="com.wancient.springcloud.api.entities.WechatUser">
+        <id column="wx_id" jdbcType="VARCHAR" property="wxId"/>
+        <result column="openid" jdbcType="VARCHAR" property="openid"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="sex" jdbcType="VARCHAR" property="sex"/>
+        <result column="province" jdbcType="TINYINT" property="province"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="country" jdbcType="VARCHAR" property="country"/>
+        <result column="headimgurl" jdbcType="VARCHAR" property="headimgurl"/>
+        <result column="privilege" jdbcType="VARCHAR" property="privilege"/>
+        <result column="unionid" jdbcType="VARCHAR" property="unionid"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_user_id" jdbcType="VARCHAR" property="createUserId"/>
+        <result column="update_user_id" jdbcType="VARCHAR" property="updateUserId"/>
+        <result column="enabled" jdbcType="INTEGER" property="enabled"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    wx_id,openid, nickname, sex,province,city,country,headimgurl,privilege,unionid,
+    create_time, update_time, create_user_id,update_user_id, enabled
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from wechat_user
+        where wx_id = #{wxId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByUsername" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from wechat_user
+        where nickname = #{nickname,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByOpenid" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from wechat_user
+        where openid = #{openid,jdbcType=VARCHAR}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap" parameterType="com.wancient.springcloud.api.entities.WechatUser">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM wechat_user
+        <where>
+            <if test="wxId != null">
+                AND wx_id = #{wxId}
+            </if>
+            <if test="nickname != null">
+                AND nickname LIKE '%${nickname}%'
+            </if>
+            <if test="openid != null">
+                AND openid = #{openid}
+            </if>
+            <if test="createUserId!=null ">
+                AND create_user_id = #{createUserId}
+            </if>
+            <if test="enabled!=null ">
+                AND enabled = #{enabled}
+            </if>
+            <if test="startTime != null ">
+                AND DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%S')>= DATE_FORMAT(#{startTime}, '%Y-%m-%d %H:%i:%S')
+            </if>
+            <if test="endTime != null ">
+                AND DATE_FORMAT(endTime, '%Y-%m-%d %H:%i:%S')>= DATE_FORMAT(#{create_time}, '%Y-%m-%d %H:%i:%S')
+            </if>
+            <if test="province != null">
+                AND province = #{province}
+            </if>
+            <if test="city != null">
+                AND city = #{city}
+            </if>
+            <if test="country != null">
+                AND country = #{country}
+            </if>
+            <if test="headimgurl != null">
+                AND headimgurl = #{headimgurl}
+            </if>
+        </where>
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from wechat_user
+    where wx_id = #{wxId,jdbcType=VARCHAR}
+  </delete>
+    <delete id="deleteByPrimaryKeyIn" parameterType="java.lang.String">
+        delete from wechat_user
+        where wx_id in
+        <!-- delete from emp where empno in(7789,7790) -->
+        <!-- forEach : 用来循环 collection : 用来指定循环的数据的类型 可以填的值有：array,list,map item
+            : 循环中为每个循环的数据指定一个别名 index : 循环中循环的下标 open : 开始 close : 结束 separator : 数组中元素之间的分隔符 -->
+        <foreach collection="array" item="arr" index="no" open="("
+                 separator="," close=")">
+            #{arr}
+        </foreach>
+    </delete>
+    <insert id="insert" parameterType="com.wancient.springcloud.api.entities.WechatUser">
+    insert into wechat_user (wx_id,openid, nickname, sex,province,city,country,headimgurl,privilege,unionid,
+     create_time, update_time,create_user_id, update_user_id, enabled
+      )
+    values (#{wxId,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR},
+    #{sex,jdbcType=VARCHAR},  #{province,jdbcType=VARCHAR},#{city,jdbcType=VARCHAR},
+    #{country,jdbcType=VARCHAR},  #{headimgurl,jdbcType=VARCHAR},#{privilege,jdbcType=VARCHAR},#{unionid,jdbcType=VARCHAR},
+    #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+      #{createUserId,jdbcType=VARCHAR}, #{updateUserId,jdbcType=VARCHAR}, #{enabled,jdbcType=INTEGER}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.wancient.springcloud.api.entities.WechatUser">
+        insert into wechat_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="wxId != null">
+                wx_id,
+            </if>
+            <if test="openid != null">
+                openid,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="province != null">
+                province,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+            <if test="country != null">
+                country,
+            </if>
+            <if test="headimgurl != null">
+                headimgurl,
+            </if>
+            <if test="privilege != null">
+                privilege,
+            </if>
+            <if test="unionid != null">
+                unionid,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="updateUserId != null">
+                update_user_id,
+            </if>
+            <if test="enabled != null">
+                enabled,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="wxId != null">
+                #{wxId,jdbcType=VARCHAR},
+            </if>
+            <if test="openid != null">
+                #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                #{province,jdbcType=TINYINT},
+            </if>
+            <if test="city != null">
+                #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="headimgurl != null">
+                #{headimgurl,jdbcType=VARCHAR},
+            </if>
+            <if test="privilege != null">
+                #{privilege,jdbcType=VARCHAR},
+            </if>
+            <if test="unionid != null">
+                #{unionid,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUserId != null">
+                #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="enabled != null">
+                #{enabled,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.wancient.springcloud.api.entities.WechatUser">
+        update wechat_user
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="openid != null">
+                openid = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                create_user_id = #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUserId != null">
+                update_user_id = #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled,jdbcType=INTEGER},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=TINYINT},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                country = #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="headimgurl != null">
+                headimgurl = #{headimgurl,jdbcType=VARCHAR},
+            </if>
+            <if test="privilege != null">
+                privilege = #{privilege,jdbcType=VARCHAR},
+            </if>
+            <if test="unionid != null">
+                unionid = #{unionid,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where wx_id = #{wxId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.wancient.springcloud.api.entities.WechatUser">
+    update wechat_user
+    set nickname = #{nickname,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=VARCHAR},
+      openid = #{openid,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = now(),
+      create_user_id = #{createUserId,jdbcType=VARCHAR},
+      update_user_id = #{updateUserId,jdbcType=VARCHAR},
+      enabled = #{enabled,jdbcType=INTEGER},
+      province = #{province,jdbcType=TINYINT},
+      city = #{city,jdbcType=VARCHAR},
+      country = #{country,jdbcType=VARCHAR},
+      headimgurl = #{headimgurl,jdbcType=VARCHAR},
+      privilege = #{privilege,jdbcType=VARCHAR},
+      unionid = #{unionid,jdbcType=VARCHAR}
+    where wx_id = #{wxId,jdbcType=VARCHAR}
+  </update>
+</mapper>

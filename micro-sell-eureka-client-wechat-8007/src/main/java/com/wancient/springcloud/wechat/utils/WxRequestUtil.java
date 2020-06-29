@@ -157,7 +157,7 @@ public class WxRequestUtil {
         material.setType(type);
         Gson gson = new Gson();
         try {
-            String result = HttpUtil.doPost(url, gson.toJson(mediaId));
+            String result = HttpUtil.doPost(url, gson.toJson(material));
             log.info("获取永久素材,请求返回数据:{}", result);
             return result;
         } catch (Exception e) {

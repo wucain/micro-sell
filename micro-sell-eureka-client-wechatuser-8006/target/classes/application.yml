@@ -1,0 +1,51 @@
+server:
+  port: 8006
+
+mybatis:
+  config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis\u914D\u7F6E\u6587\u4EF6\u6240\u5728\u8DEF\u5F84
+  type-aliases-package: com.wancient.springcloud.api.entities    # \u6240\u6709Entity\u522B\u540D\u7C7B\u6240\u5728\u5305
+  mapper-locations:
+    - classpath:mybatis/mapper/**/*.xml                       # mapper\u6620\u5C04\u6587\u4EF6
+
+spring:
+  application:
+    name: micro-user
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # \u5F53\u524D\u6570\u636E\u6E90\u64CD\u4F5C\u7C7B\u578B
+    driver-class-name: org.gjt.mm.mysql.Driver              # mysql\u9A71\u52A8\u5305
+    url: jdbc:mysql://localhost:3306/bookkeep?characterEncoding=utf-8&useSSL=false&autoReconnect=true&failOverReadOnly=false              # \u6570\u636E\u5E93\u540D\u79F0
+    username: root
+    password: root
+    dbcp2:
+      min-idle: 5                                           # \u6570\u636E\u5E93\u8FDE\u63A5\u6C60\u7684\u6700\u5C0F\u7EF4\u6301\u8FDE\u63A5\u6570
+      initial-size: 5                                       # \u521D\u59CB\u5316\u8FDE\u63A5\u6570
+      max-total: 5                                          # \u6700\u5927\u8FDE\u63A5\u6570
+      max-wait-millis: 200                                  # \u7B49\u5F85\u8FDE\u63A5\u83B7\u53D6\u7684\u6700\u5927\u8D85\u65F6\u65F6\u95F4
+
+eureka:
+  client: #\u5BA2\u6237\u7AEF\u6CE8\u518C\u8FDBeureka\u670D\u52A1\u5217\u8868\u5185
+    service-url:
+      #defaultZone: http://localhost:7001/eureka
+      defaultZone: http://eureka7001.com:8761/eureka/,http://eureka7002.com:8762/eureka/,http://eureka7003.com:8763/eureka/
+      #defaultZone: http://localhost:8761/eureka/,http://localhost:8762/eureka/,http://localhost:8763/eureka/
+  instance:
+    #\u522B\u540D
+    instance-id: micro-provider-wechatuser-8006
+    prefer-ip-address: true     #\u8BBF\u95EE\u8DEF\u5F84\u53EF\u4EE5\u663E\u793AIP\u5730\u5740
+
+info:
+  app.name: wancient-micro
+  company.name: www.wancient.com
+  build.artifactId: ${project.artifactId}
+  build.version: ${project.version}
+
+# \u6253\u5370mapper sql
+logging:
+  level:
+    com.wancient.springcloud.wechatuser.mapper: trace
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
